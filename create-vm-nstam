@@ -1,0 +1,57 @@
+#!/bin/bash
+RG=`cat ~/.rg 2>/dev/null`
+RG=${RG:-Test}
+echo "Create virtual machines A1 and A2 in Net-A and B1 in Net-B in resource group $RG"
+#
+set -x
+#
+VNET_NAME="SPOKE_No1_VNET"
+SUBNET_NAME="SUBNET_A1"
+VM_NAME=${VNET_NAME}-${SUBNET_NAME}-VM01
+VM_NAME=`echo ${VM_NAME} | sed 's/_/-/g'`
+echo $VM_NAME
+
+az vm create \
+ --resource-group $RG \
+ --name ${VM_NAME} \
+ --image UbuntuLTS \
+ --vnet-name ${VNET_NAME} \
+ --subnet ${VNET_NAME}-${SUBNET_NAME} \
+ --admin-username space \
+ --ssh-key-value ~/.ssh/id_rsa.pub \
+ --public-ip-address ${VNET_NAME}-${SUBNET_NAME}-ip \
+ --boot-diagnostics-storage bootstorageaccount01 \
+ --storage-sku Standard_LRS \
+ --size Standard_B1s
+
+
+: <<'END'
+az vm create \
+ --resource-group $RG \
+ --name A1 \
+ --image UbuntuLTS \
+ --vnet-name Net-A \
+ --subnet A1 \
+ --admin-username azure \
+ --ssh-key-value ~/.ssh/id_rsa.pub \
+ --public-ip-address Public_A1
+#
+az vm create \
+ --resource-group $RG \
+ --name A2 \
+ --image UbuntuLTS \
+ --vnet-name Net-A \
+ --subnet A2 \
+ --admin-username azure \
+ --ssh-key-value ~/.ssh/id_rsa.pub \
+ --public-ip-address Public_A2
+#
+az vm create \
+ --resource-group $RG \
+ --name B1 \
+ --image UbuntuLTS \
+ --vnet-name Net-B \
+ --subnet B1 \
+ --admin-username azure \
+ --public-ip-address Public_B1
+END
