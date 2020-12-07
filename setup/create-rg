@@ -3,4 +3,4 @@ RG=${1:-Test}
 echo "Creating resource group $RG"
 echo $RG >~/.rg
 set -x
-az group create --location eastus --name $RG
+az group create --location westeurope --name $RG
