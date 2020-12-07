@@ -1,0 +1,31 @@
+#!/bin/bash
+RG=`cat ~/.rg 2>/dev/null`
+RG=${RG:-Test}
+VNET_NAME="SPOKE_No2_VNET"
+VNET_CIDR="10.245.102"
+echo "Create A and subnets A1 and A2 in resource group $RG"
+#
+set -x
+#
+# Create VNet and first subnet
+#
+az network vnet create \
+  --resource-group $RG \
+  --name $VNET_NAME \
+  --address-prefixes ${VNET_CIDR}.0/24
+#
+# Create first subnet
+#
+az network vnet subnet create \
+  --resource-group $RG \
+  --vnet-name $VNET_NAME \
+  --name ${VNET_NAME}_SUBNET_A1 \
+  --address-prefixes ${VNET_CIDR}.0/27
+#
+# Create second subnet
+#
+az network vnet subnet create \
+  --resource-group $RG \
+  --vnet-name $VNET_NAME \
+  --name ${VNET_NAME}_SUBNET_A2 \
+  --address-prefixes ${VNET_CIDR}.32/27
